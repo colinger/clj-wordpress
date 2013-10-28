@@ -20,7 +20,7 @@
                                   (str x)]}]}) params)}]}
    )))
 
-(defn request 
+(defn do-request 
   "makes an xmlhttp request"
   [host method params]
   (client/post (str host "/xmlrpc.php") 
@@ -38,3 +38,10 @@
     (if (first p) 
       (recur (conj c (first p)) (rest p))
       c)))
+
+(defn request
+  "prepares and executes a request"
+  [config method params]
+  (do-request (:host config)
+           method
+           (prepare-params config params)))
