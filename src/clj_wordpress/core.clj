@@ -9,7 +9,7 @@
   (println x "Hello, World!"))
 
 (defn assemble-request 
-  "assemble the xmlrpc request: Method is the method to call, params is a vector of maps - each containing {:type :<type> and :value <value>"
+  "assemble the xmlrpc request: Method is the method to call, params is a vector of values"
   [method params]
   (with-out-str
     (xml/emit {:tag :methodCall, :content 
@@ -17,7 +17,7 @@
               {:tag :params, :content 
                 (mapv (fn [x] {:tag :param, :content [
                                 {:tag :value, :content [  
-                                  (str (get x :value))]}]}) params)}]}
+                                  (str x)]}]}) params)}]}
    )))
 
 (defn request 
@@ -27,3 +27,4 @@
                {:content-type :text/html
                 :body (assemble-request method params)}))
                                    
+
