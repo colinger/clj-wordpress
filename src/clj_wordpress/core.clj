@@ -28,3 +28,13 @@
                 :body (assemble-request method params)}))
                                    
 
+(defn prepare-params
+  "appends the params for the request to blog_id username pass"
+  [config params]
+  (loop [c (vector (:blog-id config)
+                   (:username config)
+                   (:password config))
+         p params]
+    (if (first p) 
+      (recur (conj c (first p)) (rest p))
+      c)))
