@@ -16,6 +16,14 @@
              [{:tag :methodName, :content [method]}
               {:tag :params, :content 
                 (mapv (fn [x] {:tag :param, :content [
-                        {:tag (get x :type), :content [
+                                {:tag :value, :content [  
                                   (str (get x :value))]}]}) params)}]}
    )))
+
+(defn request 
+  "makes an xmlhttp request"
+  [host method params]
+  (client/post (str host "/xmlrpc.php") 
+               {:content-type :text/html
+                :body (assemble-request method params)}))
+                                   
