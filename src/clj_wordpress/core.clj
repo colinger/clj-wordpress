@@ -3,11 +3,6 @@
             [clojure.xml :as xml]
             [clojure.zip :as zip]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
-
 (defn assemble-request 
   "assemble the xmlrpc request: Method is the method to call, params is a vector of values"
   [method params]
