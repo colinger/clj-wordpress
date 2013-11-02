@@ -41,3 +41,8 @@
            method
            (prepare-params config params)))
 
+
+(defn parse-xml 
+  "parses xml from a string"
+  [s]
+  (zip/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
