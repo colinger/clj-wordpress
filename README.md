@@ -4,7 +4,19 @@ A Clojure library to interact with wordpress through its XMLRPC library
 
 ## Usage
 
-FIXME
+```
+(require '[clj-wordpress.core :as wordpress])
+
+(def config {:host "http://example.com"
+  :blog-id 0
+  :username "myuser"
+  :password "mypass" })
+
+(let [wp (wordpress/initialize config)]
+  (wp 'getPosts nil))
+```
+
+
 
 ## Testing
 

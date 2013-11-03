@@ -46,3 +46,13 @@
   "parses xml from a string"
   [s]
   (zip/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
+
+(defn initialize
+  "Initializing wordpress"
+  [config]
+  (fn [method params]
+    (first
+     (parse-xml 
+      (:body 
+       (request config (str "wp." method) params))))))
+                       
