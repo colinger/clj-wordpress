@@ -47,6 +47,25 @@
   [s]
   (zip/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
 
+
+(defn beautify
+  "beautifies the map received from parse-xml"
+  [m]
+  (if (not (map? m))
+    [:text m]
+    [(:tag m) (reduce (fn [x y]
+                        (assoc x (first y) (second y)))
+                      {}
+                      (mapv beautify (:content m)))]))
+
+(defn beautify-xml
+  "beautifies the xml received from the commands"
+  [s]
+  (reduce (fn [x y] (assoc x (first y) (second y)))
+          {}
+          (mapv beautify (parse-xml s))))
+
+
 (defn initialize
   "Initializing wordpress"
   [config]

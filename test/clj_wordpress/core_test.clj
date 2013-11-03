@@ -28,3 +28,14 @@
 (deftest assemble-request-with-empty-params
   (testing "assemble-request empty parameters"
     (is (= "<?xml version='1.0' encoding='UTF-8'?>\n<methodCall>\n<methodName>\ntest\n</methodName>\n<params>\n</params>\n</methodCall>\n" (assemble-request "test" nil)))))
+
+(deftest parse-xml-test
+  (testing "parse-xml"
+    (is (= [{:tag :a, :attrs nil, :content ["test"]} nil]
+           (parse-xml "<a>test</a>")))))
+
+(deftest beautify-xml-test
+  (testing "beautify-xml"
+    (is (= {:text "test"}
+           (:a 
+            (beautify-xml "<a>test</a>"))))))
