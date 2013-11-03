@@ -6,6 +6,28 @@ A Clojure library to interact with wordpress through its XMLRPC library
 
 FIXME
 
+## Testing
+
+To test the module during development you'll need a working (empty and
+testing) wordpress instance to work from
+
+Do the following:
+
+```
+cp test/clj_wordpress/test_config.clj.tmpl test/clj_wordpress/test_config.clj
+```
+
+Then edit ```test_config.clj``` accordingly. Host points at the url of your
+wordpress instance, blog-id is the blog_id in case there are multiple
+wordpress blogs on the same install, username and password have to fit an
+admin account...
+
+then run
+
+```
+lein test
+```
+
 ## License
 
 Copyright © 2013 Michael Bauer

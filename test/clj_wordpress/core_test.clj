@@ -4,6 +4,27 @@
             )
   (use [clj-wordpress.test-config :only [config]]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest configuration
+  (testing "Configuration"
+    (is (= true 
+          (reduce 
+           (fn [x y] (and x y))
+           (map (fn [x]
+                  (contains? config x))
+                [:host :blog-id :username :password]))))))
+
+(deftest prepare-params-empty
+  (testing "Preparing parameters with no additional param"
+    (is (= 3 (count (prepare-params config nil))))))
+
+(deftest prepare-params-one
+  (testing "preparing parameters with one additional param"
+    (is (= "foo" (last (prepare-params config ["foo"]))))))
+
+(deftest prepare-params-multiple
+  (testing "preparing with multiple parameters"
+    (is (= 6 (count (prepare-params config [1 2 3]))))))
+
+(deftest assemble-request-with-empty-params
+  (testing "assemble-request empty parameters"
+    (is (= "<?xml version='1.0' encoding='UTF-8'?>\n<methodCall>\n<methodName>\ntest\n</methodName>\n<params>\n</params>\n</methodCall>\n" (assemble-request "test" nil)))))
