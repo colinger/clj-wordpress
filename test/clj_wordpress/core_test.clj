@@ -36,6 +36,6 @@
 
 (deftest beautify-xml-test
   (testing "beautify-xml"
-    (is (= {:text "test"}
+    (is (= {:text ["test"]}
            (:a 
             (beautify-xml "<a>test</a>"))))))

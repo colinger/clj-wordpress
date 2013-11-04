@@ -3,6 +3,8 @@
             [clojure.xml :as xml]
             [clojure.zip :as zip]))
 
+(declare ^:dynamic wp)
+
 (defn assemble-request 
   "assemble the xmlrpc request: Method is the method to call, params is a vector of values"
   [method params]
@@ -54,7 +56,10 @@
   (if (not (map? m))
     [:text m]
     [(:tag m) (reduce (fn [x y]
-                        (assoc x (first y) (second y)))
+                        (if (contains? x (first y))
+                          (assoc x (first y) 
+                                 (conj ((first y) x) (last y)))
+                          (assoc x (first y) (vector (second y)))))
                       {}
                       (mapv beautify (:content m)))]))
 
@@ -70,8 +75,12 @@
   "Initializing wordpress"
   [config]
   (fn [method params]
-    (first
-     (parse-xml 
+     (beautify-xml
       (:body 
-       (request config (str "wp." method) params))))))
+       (request config (str "wp." method) params)))))
                        
+(defmacro with-wp
+  "macro to wrap around stuff"
+  [config & body]
+  `(binding [wp (initialize ~config)]
+            ~@body))

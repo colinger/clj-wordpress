@@ -5,15 +5,14 @@ A Clojure library to interact with wordpress through its XMLRPC library
 ## Usage
 
 ```
-(require '[clj-wordpress.core :as wordpress])
+(require '[clj-wordpress.core :refer [wp with-wp]])
 
 (def config {:host "http://example.com"
   :blog-id 0
   :username "myuser"
   :password "mypass" })
 
-(let [wp (wordpress/initialize config)]
-  (wp 'getPosts nil))
+(with-wp config (wp 'getPosts nil))
 ```
 
 
