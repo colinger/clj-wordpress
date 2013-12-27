@@ -5,8 +5,11 @@
 
 (declare ^:dynamic wp)
 
-(defn assemble-request 
+(defmulti assemble-request 
   "assemble the xmlrpc request: Method is the method to call, params is a vector of values"
+  (fn[method params] (keyword method)))
+
+(defmethod assemble-request :wp.getPost
   [method params]
   (with-out-str
     (xml/emit {:tag :methodCall, :content 
@@ -16,13 +19,26 @@
                                 {:tag :value, :content [  
                                   (str x)]}]}) params)}]}
    )))
+  
+(defmethod assemble-request :wp.newPost
+  [method params]
+  (with-out-str
+      (xml/emit {:tag :methodCall, :content 
+             [{:tag :methodName, :content [method]}
+              {:tag :params, :content 
+                (mapv (fn [x] {:tag :param, :content [
+                                {:tag :value, :content [  
+                                  (str x)]}]}) params)}]}
+   )))
 
+  
 (defn do-request 
   "makes an xmlhttp request"
   [host method params]
-  (client/post (str host "/xmlrpc.php") 
-               {:content-type :text/html
-                :body (assemble-request method params)}))
+  (println (assemble-request method params)))  
+;(client/post (str host "/xmlrpc.php") 
+  ;             {:content-type :text/html
+  ;              :body (assemble-request method params)}))
                                    
 
 (defn prepare-params
