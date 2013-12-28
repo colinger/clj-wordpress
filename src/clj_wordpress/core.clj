@@ -22,23 +22,33 @@
   
 (defmethod assemble-request :wp.newPost
   [method params]
-  (with-out-str
-      (xml/emit {:tag :methodCall, :content 
+   (with-out-str
+    (xml/emit {:tag :methodCall, :content 
              [{:tag :methodName, :content [method]}
               {:tag :params, :content 
-                (mapv (fn [x] {:tag :param, :content [
-                                {:tag :value, :content [  
-                                  (str x)]}]}) params)}]}
+                (mapv (fn [x] 
+                        (if (map? x)
+                          {:tag :struct, :content
+                           (map (fn [x1]
+                                  {:tag :memeber, :content [
+                                                            {:tag :name, :content [(name x1)]}
+                                                            {:tag :value, :content [(x1 x)]}
+                                                            ]}) (keys x))
+                           }
+                          {:tag :param, :content [
+                                                  {:tag :value, :content [  
+                                                                          (str x)]}]})
+                        ) params)}]}
    )))
 
   
 (defn do-request 
   "makes an xmlhttp request"
   [host method params]
-  (println (assemble-request method params)))  
-;(client/post (str host "/xmlrpc.php") 
-  ;             {:content-type :text/html
-  ;              :body (assemble-request method params)}))
+;  (println (assemble-request method params)))  
+  (client/post (str host "/xmlrpc.php") 
+               {:content-type :text/html
+                :body (assemble-request method params)}))
                                    
 
 (defn prepare-params
