@@ -22,8 +22,9 @@
   
 (defmethod assemble-request :wp.newPost
   [method params]
-  (with-out-str
-      (xml/emit {:tag :methodCall, :content 
+  (println "--> " params)
+   (with-out-str
+    (xml/emit {:tag :methodCall, :content 
              [{:tag :methodName, :content [method]}
               {:tag :params, :content 
                 (mapv (fn [x] {:tag :param, :content [
