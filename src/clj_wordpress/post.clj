@@ -1,5 +1,6 @@
 (ns clj-wordpress.post
-  (:use clj-wordpress.core))
+  (:use [clj-wordpress.core]
+        [cheshire.core]))
 
 (def config {:host "http://picgather.com"
   :blog-id 0
@@ -7,12 +8,13 @@
   :password "xinying_ge" })
 ;
 (defn get-post 
-  ""
-  [id]
-  (with-wp config (wp 'getPost [id])))
+  "retrieve a post with id"
+  [config id]
+  (with-wp (merge config {:blog-id id}) (wp 'getPost nil)))
 ;
 (defn new-post
-  ""
+  "create a new post: title, content, tags"
   [config title content tags]
   (let [title (if (or (empty? title) (nil? title)) "." title)]
-    (with-wp config (wp 'newPost [{:post_title title :post_content content :mt_keywords tags}])))
+    (re-find #"[0-9]+" 
+             (generate-string (with-wp (merge config {:publish true}) (wp 'newPost [{:title title :description content :mt_keywords tags}]))))))

@@ -7,9 +7,10 @@
 
 (defmulti assemble-request 
   "assemble the xmlrpc request: Method is the method to call, params is a vector of values"
-  (fn[method params] (keyword method)))
+  (fn [method params]
+    (keyword method)))
 
-(defmethod assemble-request :wp.getPost
+(defmethod assemble-request :default
   [method params]
   (with-out-str
     (xml/emit {:tag :methodCall, :content 
@@ -19,33 +20,59 @@
                                 {:tag :value, :content [  
                                   (str x)]}]}) params)}]}
    )))
-  
-(defmethod assemble-request :wp.newPost
+
+(defmethod assemble-request :metaWeblog.getPost
   [method params]
+  (with-out-str
+    (xml/emit {:tag :methodCall, :content 
+             [{:tag :methodName, :content [method]}
+              {:tag :params, :content 
+                (mapv (fn [x] {:tag :param, :content [
+                                {:tag :value, :content [  
+                                  (str x)]}]}) params)}]}
+   )))
+;
+(defmethod assemble-request :metaWeblog.newPost
+  [method params]
+  (let [
+        params (conj params true)]
    (with-out-str
     (xml/emit {:tag :methodCall, :content 
              [{:tag :methodName, :content [method]}
               {:tag :params, :content 
-                (mapv (fn [x] 
-                        (if (map? x)
-                          {:tag :struct, :content
-                           (map (fn [x1]
-                                  {:tag :memeber, :content [
-                                                            {:tag :name, :content [(name x1)]}
-                                                            {:tag :value, :content [(x1 x)]}
-                                                            ]}) (keys x))
-                           }
-                          {:tag :param, :content [
-                                                  {:tag :value, :content [  
-                                                                          (str x)]}]})
-                        ) params)}]}
-   )))
+               (mapv (fn [x] 
+                       (if (map? x)
+                         {:tag :struct, :content
+                          (map (fn [x1]
+                                 {:tag :memeber, :content [
+                                                           {:tag :name, :content [(name x1)]}
+                                                           {:tag :value, :content 
+                                        ;[(x1 x)] 
+                                                            (if (or (= "mt_keywords" (name x1)) (= "categories" (name x1))) 
+                                                              [
+                                                               {:tag :array, :content
+                                                                (mapv (fn[v]
+                                                                        {:tag :data, :content [
+                                                                                               {:tag :value, :content [(str "" v "")]}
+                                                                                               ]}                      
+                                                                        ) (clojure.string/split (x1 x) #","))
+                                                                }
+                                                               ]
+                                                              [(x1 x)])
+                                                            }
+                                                           ]}) (keys x))
+                          }
+                         {:tag :param, :content [
+                                                 {:tag :value, :content [  
+                                                                         (str x)]}]})
+                       ) params)}]}
+              ))))
 
   
 (defn do-request 
   "makes an xmlhttp request"
   [host method params]
-;  (println (assemble-request method params)))  
+  ;;(println (assemble-request method params))
   (client/post (str host "/xmlrpc.php") 
                {:content-type :text/html
                 :body (assemble-request method params)}))
@@ -56,7 +83,8 @@
   [config params]
   (loop [c (vector (:blog-id config)
                    (:username config)
-                   (:password config))
+                   (:password config)
+                   )
          p params]
     (if (first p) 
       (recur (conj c (first p)) (rest p))
@@ -103,7 +131,7 @@
   (fn [method params]
      (beautify-xml
       (:body 
-       (request config (str "wp." method) params)))))
+       (request config (str "metaWeblog." method) params)))))
                        
 (defmacro with-wp
   "macro to wrap around stuff"
