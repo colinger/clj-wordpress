@@ -72,10 +72,10 @@
 (defn do-request 
   "makes an xmlhttp request"
   [host method params]
-  (println (assemble-request method params)))
-  ;(client/post (str host "/xmlrpc.php") 
-  ;             {:content-type :text/html
-  ;              :body (assemble-request method params)}))
+  ;(println (assemble-request method params)))
+  (client/post (str host "/xmlrpc.php") 
+              {:content-type :text/html
+                :body (assemble-request method params)}))
                                    
 
 (defn prepare-params
